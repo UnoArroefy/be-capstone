@@ -1,0 +1,16 @@
+name: capstone
+
+services:
+  backend:
+    build: .
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    volumes:
+      - ./src:/app/src
+
+  db:
+    image: mongo:latest
+    expose:
+      - 27017
