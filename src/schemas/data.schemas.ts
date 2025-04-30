@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { DataRow } from './data.dto';
 
 export type DataDocument = HydratedDocument<Data>;
 
@@ -9,7 +10,7 @@ export class Data {
   year: number;
 
   @Prop({ required: true })
-  data: JSON;
+  data: Array<DataRow>;
 }
 
 export const DataSchema = SchemaFactory.createForClass(Data);

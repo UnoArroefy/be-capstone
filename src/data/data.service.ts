@@ -1,11 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import * as fs from 'fs';
+import { Model } from 'mongoose';
 import * as path from 'path';
+import { Data } from 'src/schemas/data.schemas';
+import * as xlsx from 'node-xlsx';
 
 @Injectable()
 export class DataService {
-  test(): string {
-    return 'Hello /api';
+  constructor(@InjectModel(Data.name) private dataModel: Model<Data>) {}
+
+  async getData(year: number): Promise<Data[]> {
+    return await this.dataModel.find({
+      year: year
+    });
   }
 
   async handleFile(file: Express.Multer.File): Promise<string> {
@@ -13,19 +21,31 @@ export class DataService {
 
     await this.saveFile(uploadDir, file.originalname, file.buffer);
 
+    const content = xlsx.parse(file.buffer);
+
+    console.log(content);
+
+    console.log(content[0])
+
+
     return 'File uploaded successfully';
   }
 
-  getFile(date: string): string {
-    const filename = path.join(
-      process.cwd(),
-      'uploads',
-      `${date}-DATA-REKAPITULASI.xlsx`,
-    );
-    if (!fs.existsSync(filename)) {
-      throw new NotFoundException('File Not Found.');
+  checkFile(date: string): string {
+    const isTemplate = date === '0';
+    const filename = isTemplate
+      ? 'Template-DATA-REKAPITULASI.xlsx'
+      : `${date}-DATA-REKAPITULASI.xlsx`;
+
+    const filePath = path.join(process.cwd(), 'uploads', filename);
+
+    if (!fs.existsSync(filePath)) {
+      throw new NotFoundException(
+        isTemplate ? 'Template file not found.' : `File for ${date} not found.`,
+      );
     }
-    return filename;
+
+    return filePath;
   }
 
   private async saveFile(

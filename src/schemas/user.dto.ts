@@ -4,7 +4,6 @@ export enum Role {
 }
 
 export class CreateUser {
-  googleId: string;
   username: string;
   email: string;
   role?: Role;

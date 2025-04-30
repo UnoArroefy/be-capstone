@@ -9,30 +9,29 @@ export class AuthService {
   constructor(@InjectModel(User.name) private UserModel: Model<User>) {}
 
   async handleUser(userData: any): Promise<any> {
-
-    const user = await this.findUser(userData.id);
+    const email = userData.emails[0].value;
+    const user = await this.findUser(email);
 
     if (user) {
-        return user;
+      return user;
     }
 
     const createData: CreateUser = {
-      googleId: userData.id,
       username: userData.displayName,
-      email: userData.emails[0].value,
+      email: email,
     };
 
     return await this.createUser(createData);
-  };
+  }
 
-  private async findUser(id: string) : Promise<User | null> {
+  private async findUser(email: string): Promise<User | null> {
     return await this.UserModel.findOne({
-        googleId: id,
+      email: email,
     });
-  };
+  }
 
   private async createUser(userData: CreateUser): Promise<User> {
     const UserCreate = new this.UserModel(userData);
     return UserCreate.save();
-  };
+  }
 }

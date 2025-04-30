@@ -23,7 +23,7 @@ export class FileValidationPipe implements PipeTransform {
       throw new BadRequestException('Invalid file type.');
     }
 
-    const fileRE = /^\d{4}-DATA-REKAPITULASI.xlsx$/;
+    const fileRE = /^\[\d{4}\] REKAPITULASI\.xlsx$/;
 
     if (!fileRE.test(file.originalname)) {
       throw new BadRequestException('Invalid filename format.');

@@ -16,9 +16,9 @@ import { createReadStream } from 'fs';
 export class DataController {
   constructor(private readonly dataService: DataService) {}
 
-  @Get(':date')
-  getData(@Param('date') date: string): string {
-    return this.dataService.test();
+  @Get(':year')
+  async getData(@Param('year') year: number) {
+    return await this.dataService.getData(year);
   }
 
   @Post('upload')
@@ -29,9 +29,9 @@ export class DataController {
     return await this.dataService.handleFile(file);
   }
 
-  @Get('file/:date')
-  getFile(@Param('date') date: string): StreamableFile {
-    const filename = this.dataService.getFile(date);
+  @Get('file/:year')
+  getFile(@Param('year') year: string): StreamableFile {
+    const filename = this.dataService.checkFile(year);
     const file = createReadStream(filename);
     return new StreamableFile(file);
   }
