@@ -16,15 +16,23 @@ export class DataService {
     return 'File uploaded successfully';
   }
 
-  getFile(date : string) : string {
-    const filename = path.join(process.cwd(), 'uploads', `${date}-DATA-REKAPITULASI.xlsx`)
+  getFile(date: string): string {
+    const filename = path.join(
+      process.cwd(),
+      'uploads',
+      `${date}-DATA-REKAPITULASI.xlsx`,
+    );
     if (!fs.existsSync(filename)) {
-        throw new NotFoundException('File Not Found.');
+      throw new NotFoundException('File Not Found.');
     }
     return filename;
   }
 
-  private async saveFile(directory: string, filename: string, buffer: Buffer): Promise<void> {
+  private async saveFile(
+    directory: string,
+    filename: string,
+    buffer: Buffer,
+  ): Promise<void> {
     await fs.promises.mkdir(directory, { recursive: true });
     const filePath = path.join(directory, filename);
     await fs.promises.writeFile(filePath, buffer);

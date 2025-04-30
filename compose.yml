@@ -5,12 +5,14 @@ services:
     build: .
     ports:
       - 8000:8000
+    volumes:
+      - .:/app
     depends_on:
       - db
-    volumes:
-      - ./src:/app/src
 
   db:
     image: mongo:latest
     expose:
       - 27017
+    env_file:
+      - ./.env

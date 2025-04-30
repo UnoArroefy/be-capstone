@@ -8,24 +8,22 @@ export class FileValidationPipe implements PipeTransform {
       throw new BadRequestException('No file uploaded');
     }
 
-    const maxSize = 10 * 1024 * 1024
+    const maxSize = 10 * 1024 * 1024;
 
     if (file.size > maxSize) {
-        throw new BadRequestException('Invalid file size.')
+      throw new BadRequestException('Invalid file size.');
     }
 
-    const allowedMimeTypes = [
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
-      'text/csv',
-    ];
+    const allowedMimeType =
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
     const fileType = await fileTypeFromBuffer(file.buffer);
 
-    if (!fileType || !allowedMimeTypes.includes(fileType.mime)) {
+    if (!fileType || !(fileType.mime == allowedMimeType)) {
       throw new BadRequestException('Invalid file type.');
     }
 
-    const fileRE = /^\d{4}-DATA-REKAPITULASI\.(xlsx|csv)$/;
+    const fileRE = /^\d{4}-DATA-REKAPITULASI.xlsx$/;
 
     if (!fileRE.test(file.originalname)) {
       throw new BadRequestException('Invalid filename format.');

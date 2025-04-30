@@ -3,7 +3,6 @@ import {
   Get,
   Param,
   Post,
-  Res,
   StreamableFile,
   UploadedFile,
   UseInterceptors,
@@ -13,13 +12,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FileValidationPipe } from './validation.pipe';
 import { createReadStream } from 'fs';
 
-
 @Controller('/api/data')
 export class DataController {
   constructor(private readonly dataService: DataService) {}
 
   @Get(':date')
-  getData(@Param('date') date : string): string {
+  getData(@Param('date') date: string): string {
     return this.dataService.test();
   }
 
