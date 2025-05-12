@@ -1,35 +1,94 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as fs from 'fs';
 import { Model } from 'mongoose';
 import * as path from 'path';
 import { Data } from 'src/schemas/data.schemas';
 import * as xlsx from 'node-xlsx';
+import { DataEntry, DataFinal, DataRow } from 'src/schemas/data.dto';
 
 @Injectable()
 export class DataService {
   constructor(@InjectModel(Data.name) private dataModel: Model<Data>) {}
 
   async getData(year: number): Promise<Data[]> {
-    return await this.dataModel.find({
+    const data = await this.dataModel.find({
       year: year
     });
+
+    if (!data || data.length === 0) {
+      throw new NotFoundException('Data Not Found');
+    }
+
+    return data
   }
 
   async handleFile(file: Express.Multer.File): Promise<string> {
     const uploadDir = path.join(process.cwd(), 'uploads');
-
-    await this.saveFile(uploadDir, file.originalname, file.buffer);
-
+  
+    const fileRE = /^\[(\d{4})\] REKAPITULASI\.xlsx$/;
+    const match = file.originalname.match(fileRE);
+    
+    let year = NaN;
+  
+    if (match) {
+      year = parseInt(match[1], 10);
+    }
+    
     const content = xlsx.parse(file.buffer);
+    
+    const expectedNames = [
+      'KESELURUHAN (OTOMATIS)',
+      'SBRC',
+      'PS Sawit',
+      'PSSP',
+      'LRITM',
+      'CREATA',
+      'Biotech',
+      'BRAIN'
+    ];
+    const extractedNames = content.flatMap(sheet => sheet['name'])
 
-    console.log(content);
+    const equal = expectedNames.length === extractedNames.length 
+                  && expectedNames.every(name => extractedNames.includes(name)) 
+                  && extractedNames.every(name => expectedNames.includes(name));
+    
+    if (!equal) {
+      throw new BadRequestException("Invalid Data format.")
+    }
+    
+    const result: DataRow[] = [];
+    
+    for (const value of content) {
+      const headers = value['data'][0];
+      
+      const objs: DataEntry[] = [];
+      
+      for (const data of value['data'].slice(1, -1)) {
+        const obj = Object.fromEntries(
+          headers.map((key, i) => [key, data[i]])
+        );
+        objs.push(obj);
+      }
+      
+      const data_obj = {
+        name: value['name'],
+        data: objs
+      };
+      
+      result.push(data_obj);
+    }
+    
+    const finalData: DataFinal = {
+      year: year,
+      data : result
+    }
+    
+    await this.saveFile(uploadDir, file.originalname, file.buffer);
+    await this.dataModel.replaceOne({year}, finalData, {upsert: true})
 
-    console.log(content[0])
-
-
-    return 'File uploaded successfully';
-  }
+    return JSON.stringify(finalData);
+  }  
 
   checkFile(date: string): string {
     const isTemplate = date === '0';
