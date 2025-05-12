@@ -93,8 +93,8 @@ export class DataService {
   checkFile(date: string): string {
     const isTemplate = date === '0';
     const filename = isTemplate
-      ? 'Template-DATA-REKAPITULASI.xlsx'
-      : `${date}-DATA-REKAPITULASI.xlsx`;
+      ? '[TEMPLATE] REKAPITULASI.xlsx'
+      : `[${date}] REKAPITULASI.xlsx`;
 
     const filePath = path.join(process.cwd(), 'uploads', filename);
 
