@@ -37,6 +37,9 @@ MONGO_INITDB_DATABASE=
 MONGO_URL_CONNECTION=
 ADMIN_EMAIL=
 ADMIN_USERNAME=
+JWT_SECRET=
+JWT_EXPIRE=
+FRONTEND_URL=
 ```
 
 3. **Run The Application**
@@ -55,7 +58,7 @@ npm run start:prod
 
 ## API Documentation
 
-This application provides a simple REST API for authentication and data management used in the performance dashboard system. Below are the available endpoints.
+This application provides a simple REST API for authentication and data management. Below are the available endpoints.
 
 ---
 
@@ -65,7 +68,7 @@ This application provides a simple REST API for authentication and data manageme
 Initiates the OAuth2 login flow using Google.
 
 #### `GET /api/auth/google/callback`
-Handles the OAuth2 callback and returns the authenticated user data.
+Handles the OAuth2 callback from Google. Upon successful authentication, the server generates a JWT access token and redirects the user to the provided frontend URL with the JWT token appended in the URL as a query parameter.
 
 ---
 

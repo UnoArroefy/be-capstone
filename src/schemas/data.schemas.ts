@@ -14,15 +14,15 @@ export class DataRow {
 @Schema({
   toJSON: {
     virtuals: false,
-    versionKey: false, 
+    versionKey: false,
     transform: (_, ret) => {
       delete ret._id;
       return ret;
-    }
-  }
+    },
+  },
 })
 export class Data {
-  @Prop({ required: true, unique: true})
+  @Prop({ required: true, unique: true })
   year: number;
 
   @Prop({ type: [DataRow], required: true, _id: false })

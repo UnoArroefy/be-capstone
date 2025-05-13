@@ -7,11 +7,11 @@ export class DataEntry {
 }
 
 export class DataRow {
-    name: string;
-    data: DataEntry[]
+  name: string;
+  data: DataEntry[];
 }
 
 export class DataFinal {
-    year: number;
-    data: DataRow[];
+  year: number;
+  data: DataRow[];
 }
