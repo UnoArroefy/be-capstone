@@ -23,7 +23,7 @@ export class DataController {
 
   @Get()
   async getYears() {
-    return (await this.dataService.getYears()).map(item => item.year).sort();
+    return await this.dataService.getYears();
   }
 
   @Get(':year')
