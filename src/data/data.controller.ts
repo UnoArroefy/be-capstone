@@ -21,6 +21,11 @@ import { RolesGuard } from 'src/auth/role.guard';
 export class DataController {
   constructor(private readonly dataService: DataService) {}
 
+  @Get()
+  async getYears() {
+    return (await this.dataService.getYears()).map(item => item.year).sort();
+  }
+
   @Get(':year')
   async getData(@Param('year', ParseIntPipe) year: number) {
     return await this.dataService.getData(year);

@@ -15,6 +15,10 @@ import { DataEntry, DataFinal, DataRow } from 'src/schemas/data.dto';
 export class DataService {
   constructor(@InjectModel(Data.name) private dataModel: Model<Data>) {}
 
+  async getYears(): Promise<Data[]> {
+    return await this.dataModel.find().select('year');
+  }
+
   async getData(year: number): Promise<Data[]> {
     const data = await this.dataModel.find({
       year: year,
